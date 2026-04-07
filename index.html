@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Master Class</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Manrope:wght@200;400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent-red: #ef233c;
+            --accent-red-glow: rgba(239, 35, 60, 0.5);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        /* ── Animations ── */
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes border-spin {
+            from { --gradient-angle: 0deg; }
+            to { --gradient-angle: 360deg; }
+        }
+        @keyframes animStar {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-2000px); }
+        }
+        @property --gradient-angle {
+            syntax: "<angle>";
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        .animate-fade-up {
+            animation: fade-in-up 0.8s ease-out forwards;
+            opacity: 0;
+        }
+
+        /* ── Fonts ── */
+        .font-manrope { font-family: 'Manrope', sans-serif; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* ── Shiny CTA Button ── */
+        .shiny-cta {
+            --gradient-angle: 0deg;
+            position: relative;
+            overflow: hidden;
+            border-radius: 9999px;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(#000000, #000000) padding-box,
+                conic-gradient(from var(--gradient-angle), transparent 0%, #ef233c 5%, #ef233c 15%, #ef233c 30%, transparent 40%, transparent 100%) border-box;
+            border: 2px solid transparent;
+            cursor: pointer;
+            isolation: isolate;
+            animation: border-spin 2.5s linear infinite;
+        }
+        .shiny-cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, white 0.5px, transparent 0);
+            background-size: 4px 4px;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        /* ── Star Fields ── */
+        .stars-1 { box-shadow: 234px 124px #fff, 654px 345px #fff, 876px 12px #fff, 1200px 800px #fff, 400px 1500px #fff, 1800px 200px #fff, 100px 1000px #fff, 900px 1900px #fff, 500px 600px #fff, 1400px 100px #fff, 300px 400px #fff, 1600px 1200px #fff; }
+        .stars-2 { box-shadow: 123px 456px #fff, 789px 234px #fff, 456px 890px #fff, 1100px 300px #fff, 200px 1200px #fff, 1500px 500px #fff, 600px 1700px #fff, 1300px 900px #fff; }
+
+        /* ── Header Blur ── */
+        .gradient-blur {
+            position: fixed;
+            z-index: 40;
+            inset: 0 0 auto 0;
+            height: 120px;
+            pointer-events: none;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+            backdrop-filter: blur(8px);
+            mask-image: linear-gradient(to bottom, black, transparent);
+        }
+
+        /* ── Selection ── */
+        .selection-red::selection { background: #ef233c; color: white; }
+        .selection-red *::selection { background: #ef233c; color: white; }
+
+        /* ── Ghost Text ── */
+        .text-stroke {
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.1);
+            color: transparent;
+        }
+
+        /* ── Card Hover Glow ── */
+        .card-glow {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            border-radius: inherit;
+        }
+        .group:hover .card-glow { opacity: 1; }
+
+        /* ── Code Blocks ── */
+        .cmd-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            background: rgba(239, 35, 60, 0.1);
+            border: 1px solid rgba(239, 35, 60, 0.2);
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.25rem;
+            color: #f87171;
+        }
+
+        /* ── Table Rows ── */
+        .ref-table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+        .ref-table tr:hover td { background: rgba(239, 35, 60, 0.05); }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ef233c; }
+
+        /* ── Workflow Step Connector ── */
+        .step-connector {
+            position: absolute;
+            top: 1.25rem;
+            left: calc(100% + 0.25rem);
+            width: calc(2rem - 0.5rem);
+            height: 2px;
+            background: linear-gradient(to right, #ef233c, transparent);
+        }
+
+        /* ── Mobile Nav ── */
+        .mobile-nav {
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        .mobile-nav.open { transform: translateX(0); }
+    </style>
+</head>
+<body class="selection-red">
+    <div class="min-h-screen bg-black text-white font-inter relative overflow-x-hidden">
+
+        <!-- ════════════════════════════════════════ -->
+        <!-- GLOBAL BACKGROUND                       -->
+        <!-- ════════════════════════════════════════ -->
+        <div class="fixed inset-0 z-0 pointer-events-none">
+            <div class="absolute inset-0 bg-gradient-to-b from-[#1a0505] to-black"></div>
+            <div class="absolute top-0 left-0 w-[1px] h-[1px] bg-transparent stars-1 animate-[animStar_50s_linear_infinite]"></div>
+            <div class="absolute top-0 left-0 w-[2px] h-[2px] bg-transparent stars-2 animate-[animStar_80s_linear_infinite]"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-red-600/5 rounded-full blur-[120px]"></div>
+            <div class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(circle_at_center,black_40%,transparent_80%)]"></div>
+        </div>
+
+        <!-- Top Blur -->
+        <div class="gradient-blur"></div>
+
+        <!-- ════════════════════════════════════════ -->
+        <!-- NAVBAR                                  -->
+        <!-- ════════════════════════════════════════ -->
+        <header class="fixed top-0 left-0 w-full z-50 pt-6 px-4">
+            <nav class="max-w-5xl mx-auto flex items-center justify-between bg-black/60 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 shadow-2xl">
+                <a href="#hero" class="flex items-center gap-2">
+                    <div class="w-5 h-5 bg-[#ef233c] rounded-sm rotate-45"></div>
+                    <span class="text-lg font-bold font-manrope tracking-tight">CC Master Class</span>
+                </a>
+
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="#topics" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Topics</a>
+                    <a href="#quick-ref" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Quick Ref</a>
+                    <a href="#workflows" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Workflows</a>
+                    <a href="#config" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Config</a>
+                    <a href="#tips" class="text-sm font-medium text-zinc-400 hover:text-white transition-colors">Tips</a>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener" class="hidden md:block text-sm font-medium text-zinc-300 hover:text-white transition-colors">Docs</a>
+                    <button id="mobile-menu-btn" class="md:hidden p-2 text-zinc-400 hover:text-white">
+                        <iconify-icon icon="lucide:menu" width="20" height="20"></iconify-icon>
+                    </button>
+                </div>
+            </nav>
+        </header>
+
+        <!-- Mobile Nav Overlay -->
+        <div id="mobile-nav" class="mobile-nav fixed inset-0 z-[60] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center gap-8">
+            <button id="mobile-close-btn" class="absolute top-8 right-8 text-zinc-400 hover:text-white">
+                <iconify-icon icon="lucide:x" width="24" height="24"></iconify-icon>
+            </button>
+            <a href="#topics" class="text-2xl font-manrope font-semibold text-zinc-300 hover:text-white transition-colors mobile-link">Topics</a>
+            <a href="#quick-ref" class="text-2xl font-manrope font-semibold text-zinc-300 hover:text-white transition-colors mobile-link">Quick Ref</a>
+            <a href="#workflows" class="text-2xl font-manrope font-semibold text-zinc-300 hover:text-white transition-colors mobile-link">Workflows</a>
+            <a href="#config" class="text-2xl font-manrope font-semibold text-zinc-300 hover:text-white transition-colors mobile-link">Config</a>
+            <a href="#tips" class="text-2xl font-manrope font-semibold text-zinc-300 hover:text-white transition-colors mobile-link">Tips</a>
+        </div>
+
+        <main class="relative z-10">
+
+            <!-- ════════════════════════════════════════ -->
+            <!-- HERO                                    -->
+            <!-- ════════════════════════════════════════ -->
+            <section id="hero" class="min-h-screen flex flex-col items-center justify-center pt-32 pb-20 px-6">
+                <div class="text-center max-w-5xl mx-auto">
+                    <!-- Badge -->
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 animate-fade-up" style="animation-delay: 0.1s;">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-[#ef233c]"></span>
+                        </span>
+                        <span class="text-xs font-medium text-red-100/90 tracking-wide font-manrope">Your Claude Code Knowledge Hub</span>
+                    </div>
+
+                    <!-- Heading -->
+                    <h1 class="text-6xl md:text-8xl font-semibold tracking-tighter font-manrope leading-[1.1] mb-8 animate-fade-up" style="animation-delay: 0.2s;">
+                        <span class="block text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/40">Master</span>
+                        <span class="block text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/40">
+                            <span class="text-[#ef233c] inline-block relative">
+                                Claude Code
+                                <svg class="absolute w-full h-3 -bottom-2 left-0 text-[#ef233c] opacity-60" viewBox="0 0 100 10" preserveAspectRatio="none">
+                                    <path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="2" fill="none" />
+                                </svg>
+                            </span>
+                        </span>
+                    </h1>
+
+                    <!-- Sub -->
+                    <p class="text-xl md:text-2xl text-zinc-400 max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-up" style="animation-delay: 0.3s;">
+                        Commands, workflows, configuration, and hard-won tips. Everything you need to work with Claude Code like a pro.
+                    </p>
+
+                    <!-- CTAs -->
+                    <div class="flex flex-col md:flex-row items-center justify-center gap-6 animate-fade-up" style="animation-delay: 0.4s;">
+                        <a href="#topics" class="shiny-cta group">
+                            <span class="relative z-10 flex items-center gap-2 text-white font-medium">
+                                Explore Topics <iconify-icon icon="lucide:arrow-right" class="transition-transform group-hover:translate-x-1"></iconify-icon>
+                            </span>
+                        </a>
+                        <a href="#quick-ref" class="group px-8 py-4 rounded-full bg-zinc-900 border border-zinc-800 text-zinc-300 font-medium hover:text-white hover:bg-zinc-800 transition-all flex items-center gap-2">
+                            <iconify-icon icon="lucide:terminal" width="20" height="20"></iconify-icon>
+                            Quick Reference
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Tool Strip -->
+                <div class="w-full mt-32 border-y border-white/5 bg-white/[0.02] backdrop-blur-sm py-10 opacity-60 hover:opacity-100 transition-opacity">
+                    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-8 md:gap-16">
+                        <p class="text-sm font-bold tracking-widest text-zinc-500 uppercase shrink-0">Works with:</p>
+                        <div class="flex flex-wrap justify-center gap-8 md:gap-16 items-center w-full">
+                            <div class="flex items-center gap-2 font-manrope font-semibold text-zinc-400"><iconify-icon icon="lucide:terminal" width="20" height="20" class="text-zinc-500"></iconify-icon>Terminal</div>
+                            <div class="flex items-center gap-2 font-manrope font-semibold text-zinc-400"><iconify-icon icon="lucide:code-2" width="20" height="20" class="text-zinc-500"></iconify-icon>VS Code</div>
+                            <div class="flex items-center gap-2 font-manrope font-semibold text-zinc-400"><iconify-icon icon="lucide:monitor" width="20" height="20" class="text-zinc-500"></iconify-icon>Desktop</div>
+                            <div class="flex items-center gap-2 font-manrope font-semibold text-zinc-400"><iconify-icon icon="lucide:globe" width="20" height="20" class="text-zinc-500"></iconify-icon>Web</div>
+                            <div class="flex items-center gap-2 font-manrope font-semibold text-zinc-400"><iconify-icon icon="lucide:braces" width="20" height="20" class="text-zinc-500"></iconify-icon>JetBrains</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════════════ -->
+            <!-- TOPICS BENTO GRID                       -->
+            <!-- ════════════════════════════════════════ -->
+            <section id="topics" class="py-32 px-6">
+                <div class="max-w-7xl mx-auto">
+                    <div class="mb-12 text-center max-w-3xl mx-auto">
+                        <h2 class="text-4xl md:text-5xl font-semibold text-white tracking-tight font-manrope mb-6">
+                            What You'll <span class="text-[#ef233c]">Learn</span>
+                        </h2>
+                        <p class="text-lg text-zinc-400 font-light mb-10">
+                            Deep dives into every corner of Claude Code.
+                        </p>
+                        <!-- Search -->
+                        <div class="max-w-md mx-auto relative">
+                            <iconify-icon icon="lucide:search" width="18" height="18" class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500"></iconify-icon>
+                            <input id="topic-search" type="text" placeholder="Filter topics..." class="w-full bg-white/5 border border-white/10 rounded-full pl-11 pr-6 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-[#ef233c]/50 transition-all">
+                        </div>
+                    </div>
+
+                    <div id="topics-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+                        <!-- Card 1: Getting Started (2 col, 2 row) -->
+                        <div class="topic-card lg:col-span-2 lg:row-span-2 group relative overflow-hidden p-8 border border-white/10 bg-gradient-to-b from-zinc-900/50 to-black hover:border-white/20 transition-all rounded-xl" data-topic="getting started installation setup auth environments terminal">
+                            <div class="card-glow" style="background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(239,35,60,0.08), transparent 60%);"></div>
+                            <div class="relative z-10 h-full flex flex-col">
+                                <div class="mb-6 inline-flex p-3 rounded-lg bg-white/5 border border-white/10 text-[#ef233c] w-fit">
+                                    <iconify-icon icon="lucide:terminal" width="24" height="24"></iconify-icon>
+                                </div>
+                                <h3 class="text-3xl font-semibold text-white font-manrope mb-4 tracking-tight">Getting Started</h3>
+                                <p class="text-zinc-400 text-lg leading-relaxed mb-6">Install Claude Code, authenticate, and run your first session. Works as a CLI, VS Code extension, desktop app, web app, and JetBrains plugin.</p>
+                                <div class="mt-2 space-y-2 text-sm font-mono text-zinc-500">
+                                    <p><span class="cmd-code">npm install -g @anthropic-ai/claude-code</span></p>
+                                    <p><span class="cmd-code">claude</span> to start interactive mode</p>
+                                    <p><span class="cmd-code">claude "query"</span> to start with a prompt</p>
+                                </div>
+                                <div class="mt-auto pt-6 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
+                                    <span class="text-xs font-mono text-[#ef233c] tracking-wide">FOUNDATION</span>
+                                    <iconify-icon icon="lucide:arrow-right" width="16" height="16" class="text-[#ef233c]"></iconify-icon>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Memory & Instructions -->
+                        <div class="topic-card group relative overflow-hidden p-8 border border-white/10 bg-black hover:border-white/20 transition-all rounded-xl" data-topic="memory instructions claude.md rules auto memory init">
+                            <div class="card-glow" style="background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(168,85,247,0.08), transparent 60%);"></div>
+                            <div class="relative z-10">
+                                <div class="mb-4 inline-flex p-3 rounded-lg bg-white/5 border border-white/10 text-purple-400 w-fit">
+                                    <iconify-icon icon="lucide:brain" width="24" height="24"></iconify-icon>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white font-manrope mb-2">Memory & Instructions</h3>
+                                <p class="text-sm text-zinc-400 leading-relaxed">CLAUDE.md files, auto memory, <span class="cmd-code">.claude/rules/</span>, and scoped instructions that persist across sessions.</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Prompting Techniques -->
+                        <div class="topic-card group relative overflow-hidden p-8 border border-white/10 bg-black hover:border-white/20 transition-all rounded-xl" data-topic="prompting techniques context plan mode explore implement @file references images">
+                            <div class="card-glow" style="background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(59,130,246,0.08), transparent 60%);"></div>
+                            <div class="relative z-10">
+                                <div class="mb-4 inline-flex p-3 rounded-lg bg-white/5 border border-white/10 text-blue-400 w-fit">
+                                    <iconify-icon icon="lucide:message-square" width="24" height="24"></iconify-icon>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white font-manrope mb-2">Prompting Techniques</h3>
+                                <p class="text-sm text-zinc-400 leading-relaxed">Write effective prompts, reference files with <span class="cmd-code">@path</span>, use Plan Mode, and master the explore-plan-implement flow.</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Hooks & Configuration (2 col) -->
+                        <div class="topic-card lg:col-span-2 group relative overflow-hidden p-8 border border-white/10 bg-black hover:border-white/20 transition-all rounded-xl" data-topic="hooks configuration settings permissions pretooluse posttooluse sessionstart precompact command prompt agent">
+                            <div class="card-glow" style="background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(234,179,8,0.08), transparent 60%);"></div>
+                            <div class="relative z-10">
+                                <div class="mb-4 inline-flex p-3 rounded-lg bg-white/5 border border-white/10 text-yellow-400 w-fit">
+                                    <iconify-icon icon="lucide:settings" width="24" height="24"></iconify-icon>
+                                </div>
+                                <h3 class="text-2xl font-semibold text-white font-manrope mb-3">Hooks & Configuration</h3>
+                                <p class="text-zinc-400 leading-relaxed">Automate actions with lifecycle hooks (command, HTTP, prompt, agent types). Configure permissions, settings files, environment variables, and status lines across user, project, and local scopes.</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 5: MCP Servers -->
+                        <div class="topic-card group relative overflow-hidden p-8 border border-white/10 bg-black hover:border-white/20 transition-all rounded-xl" data-topic="mcp servers model context protocol tools external connect">
+                            <div class="card-glow" style="background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(34,197,94,0.08), transparent 60%);"></div>
+                            <div class="relative z-10">
+                                <div class="mb-4 inline-flex p-3 rounded-lg bg-white/5 border border-white/10 text-green-400 w-fit">
+                                    <iconify-icon icon="lucide:plug" width="24" height="24"></iconify-icon>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white font-manrope mb-2">MCP Servers</h3>
+                                <p class="text-sm text-zinc-400 leading-relaxed">Connect external tools via the Model Context Protocol. Add servers with <span class="cmd-code">claude mcp add</span> for databases, APIs, and more.</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 6: Skills & Plugins -->
+                        <div class="topic-card group relative overflow-hidden p-8 border border-white/10 bg-black hover:border-white/20 transition-all rounded-xl" data-topic="skills plugins custom commands slash marketplace skill.md">
+                            <div class="card-glow" style="background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(244,114,182,0.08), transparent 60%);"></div>
+                            <div class="relative z-10">
+                                <div class="mb-4 inline-flex p-3 rounded-lg bg-white/5 border border-white/10 text-pink-400 w-fit">
+                                    <iconify-icon icon="lucide:wand-2" width="24" height="24"></iconify-icon>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white font-manrope mb-2">Skills & Plugins</h3>
+                                <p class="text-sm text-zinc-400 leading-relaxed">Create custom slash commands with SKILL.md files, install plugins from marketplaces, and extend Claude's capabilities.</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 7: Subagents & Teams -->
+                        <div class="topic-card group relative overflow-hidden p-8 border border-white/10 bg-black hover:border-white/20 transition-all rounded-xl" data-topic="subagents agents teams delegation worktree isolation parallel">
+                            <div class="card-glow" style="background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(99,102,241,0.08), transparent 60%);"></div>
+                            <div class="relative z-10">
+                                <div class="mb-4 inline-flex p-3 rounded-lg bg-white/5 border border-white/10 text-indigo-400 w-fit">
+                                    <iconify-icon icon="lucide:users" width="24" height="24"></iconify-icon>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white font-manrope mb-2">Subagents & Teams</h3>
+                                <p class="text-sm text-zinc-400 leading-relaxed">Define custom agents in <span class="cmd-code">.claude/agents/</span>, delegate tasks with worktree isolation, and run parallel agent teams.</p>
+                            </div>
+                        </div>
+
+                        <!-- Card 8: Automation & CI/CD -->
+                        <div class="topic-card group relative overflow-hidden p-8 border border-white/10 bg-black hover:border-white/20 transition-all rounded-xl" data-topic="automation ci cd github actions non-interactive pipe schedule loop">
+                            <div class="card-glow" style="background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(251,146,60,0.08), transparent 60%);"></div>
+                            <div class="relative z-10">
+                                <div class="mb-4 inline-flex p-3 rounded-lg bg-white/5 border border-white/10 text-orange-400 w-fit">
+                                    <iconify-icon icon="lucide:play" width="24" height="24"></iconify-icon>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white font-manrope mb-2">Automation & CI/CD</h3>
+                                <p class="text-sm text-zinc-400 leading-relaxed">Run non-interactive with <span class="cmd-code">claude -p</span>, integrate into GitHub Actions, schedule recurring tasks, and build pipelines.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════════════ -->
+            <!-- QUICK REFERENCE                         -->
+            <!-- ════════════════════════════════════════ -->
+            <section id="quick-ref" class="py-32 px-6 border-t border-white/5">
+                <div class="max-w-7xl mx-auto">
+                    <div class="mb-16 text-center">
+                        <h2 class="text-4xl md:text-5xl font-semibold text-white tracking-tight font-manrope mb-4">
+                            Quick <span class="text-[#ef233c]">Reference</span>
+                        </h2>
+                        <p class="text-lg text-zinc-400 font-light">The commands and shortcuts you'll use every day.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                        <!-- Essential Commands -->
+                        <div class="p-6 border border-zinc-800 bg-black/60 rounded-xl">
+                            <h3 class="text-xs font-bold text-[#ef233c] uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <iconify-icon icon="lucide:terminal" width="14" height="14"></iconify-icon>
+                                Essential Commands
+                            </h3>
+                            <table class="ref-table w-full text-sm">
+                                <tbody>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">claude</code></td><td class="py-2 text-zinc-400">Start interactive session</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">claude "query"</code></td><td class="py-2 text-zinc-400">Start with a prompt</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">claude -p "query"</code></td><td class="py-2 text-zinc-400">Non-interactive (pipe-friendly)</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">claude -c</code></td><td class="py-2 text-zinc-400">Continue last session</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">claude -r "name"</code></td><td class="py-2 text-zinc-400">Resume by session name</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">claude --model</code></td><td class="py-2 text-zinc-400">Switch model (opus, sonnet)</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">claude mcp add</code></td><td class="py-2 text-zinc-400">Add MCP server</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">claude update</code></td><td class="py-2 text-zinc-400">Update Claude Code</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">claude config set</code></td><td class="py-2 text-zinc-400">Set a config value</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Keyboard Shortcuts -->
+                        <div class="p-6 border border-zinc-800 bg-black/60 rounded-xl">
+                            <h3 class="text-xs font-bold text-[#ef233c] uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <iconify-icon icon="lucide:keyboard" width="14" height="14"></iconify-icon>
+                                Keyboard Shortcuts
+                            </h3>
+                            <table class="ref-table w-full text-sm">
+                                <tbody>
+                                    <tr><td class="py-2 pr-4"><kbd class="cmd-code">Esc</kbd></td><td class="py-2 text-zinc-400">Stop generation</td></tr>
+                                    <tr><td class="py-2 pr-4"><kbd class="cmd-code">Esc Esc</kbd></td><td class="py-2 text-zinc-400">Rewind / restore turn</td></tr>
+                                    <tr><td class="py-2 pr-4"><kbd class="cmd-code">Shift+Tab</kbd></td><td class="py-2 text-zinc-400">Cycle permission modes</td></tr>
+                                    <tr><td class="py-2 pr-4"><kbd class="cmd-code">Ctrl+C</kbd></td><td class="py-2 text-zinc-400">Cancel current action</td></tr>
+                                    <tr><td class="py-2 pr-4"><kbd class="cmd-code">Ctrl+L</kbd></td><td class="py-2 text-zinc-400">Redraw screen</td></tr>
+                                    <tr><td class="py-2 pr-4"><kbd class="cmd-code">Ctrl+O</kbd></td><td class="py-2 text-zinc-400">Toggle verbose / transcript</td></tr>
+                                    <tr><td class="py-2 pr-4"><kbd class="cmd-code">Ctrl+R</kbd></td><td class="py-2 text-zinc-400">Search prompt history</td></tr>
+                                    <tr><td class="py-2 pr-4"><kbd class="cmd-code">Alt+T</kbd></td><td class="py-2 text-zinc-400">Toggle thinking</td></tr>
+                                    <tr><td class="py-2 pr-4"><kbd class="cmd-code">Alt+P</kbd></td><td class="py-2 text-zinc-400">Switch model</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Slash Commands -->
+                        <div class="p-6 border border-zinc-800 bg-black/60 rounded-xl">
+                            <h3 class="text-xs font-bold text-[#ef233c] uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <iconify-icon icon="lucide:slash" width="14" height="14"></iconify-icon>
+                                Slash Commands
+                            </h3>
+                            <table class="ref-table w-full text-sm">
+                                <tbody>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">/init</code></td><td class="py-2 text-zinc-400">Generate CLAUDE.md</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">/compact</code></td><td class="py-2 text-zinc-400">Compress context window</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">/clear</code></td><td class="py-2 text-zinc-400">Reset conversation</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">/memory</code></td><td class="py-2 text-zinc-400">View memory files</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">/resume</code></td><td class="py-2 text-zinc-400">Resume a session</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">/hooks</code></td><td class="py-2 text-zinc-400">View active hooks</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">/permissions</code></td><td class="py-2 text-zinc-400">Manage permissions</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">/help</code></td><td class="py-2 text-zinc-400">Show help</td></tr>
+                                    <tr><td class="py-2 pr-4"><code class="cmd-code">/fast</code></td><td class="py-2 text-zinc-400">Toggle fast mode</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════════════ -->
+            <!-- PRO TIPS BANNER                         -->
+            <!-- ════════════════════════════════════════ -->
+            <section id="tips" class="w-full bg-[#ef233c] py-20 px-6">
+                <div class="max-w-4xl mx-auto text-center">
+                    <div class="flex justify-center gap-1 text-black mb-6">
+                        <iconify-icon icon="lucide:lightbulb" width="24" height="24"></iconify-icon>
+                    </div>
+                    <h3 class="text-3xl md:text-5xl font-bold text-black font-manrope leading-tight mb-8">
+                        "Run <span class="font-mono">/clear</span> between unrelated tasks. A clean context with a better prompt always outperforms a long session with accumulated noise."
+                    </h3>
+                    <div class="flex items-center justify-center gap-4">
+                        <div class="w-12 h-12 bg-black rounded-full overflow-hidden flex items-center justify-center">
+                            <iconify-icon icon="lucide:zap" class="text-white" width="24" height="24"></iconify-icon>
+                        </div>
+                        <div class="text-left">
+                            <div class="text-black font-bold text-lg">Power User Tip #1</div>
+                            <div class="text-black/70 font-medium">Context Management</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════════════ -->
+            <!-- WORKFLOWS                               -->
+            <!-- ════════════════════════════════════════ -->
+            <section id="workflows" class="py-32 px-6 border-t border-white/5">
+                <div class="max-w-7xl mx-auto">
+                    <div class="mb-16 text-center">
+                        <h2 class="text-4xl md:text-5xl font-semibold text-white tracking-tight font-manrope mb-4">
+                            Power User <span class="text-[#ef233c]">Workflows</span>
+                        </h2>
+                        <p class="text-lg text-zinc-400 font-light">Patterns that multiply your productivity.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        <!-- Workflow 1: Explore-Plan-Implement -->
+                        <div class="group p-8 border border-zinc-800 bg-black/60 hover:border-white/20 transition-all rounded-xl">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="p-2 rounded-lg bg-[#ef233c]/10 text-[#ef233c]">
+                                    <iconify-icon icon="lucide:route" width="20" height="20"></iconify-icon>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white font-manrope">Explore &rarr; Plan &rarr; Implement</h3>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-[#ef233c]">1</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Enter Plan Mode</p>
+                                        <p class="text-zinc-500 text-xs">Press <kbd class="cmd-code">Shift+Tab</kbd> to switch to plan mode</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-[#ef233c]">2</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Explore the Codebase</p>
+                                        <p class="text-zinc-500 text-xs">Ask Claude to read files, find patterns, understand architecture</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-[#ef233c]">3</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Review the Plan</p>
+                                        <p class="text-zinc-500 text-xs">Claude writes a plan file. Iterate until aligned.</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-[#ef233c]">4</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Switch to Normal Mode & Execute</p>
+                                        <p class="text-zinc-500 text-xs">Approve the plan, Claude implements it step by step</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Workflow 2: Writer/Reviewer Pattern -->
+                        <div class="group p-8 border border-zinc-800 bg-black/60 hover:border-white/20 transition-all rounded-xl">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="p-2 rounded-lg bg-indigo-500/10 text-indigo-400">
+                                    <iconify-icon icon="lucide:git-pull-request" width="20" height="20"></iconify-icon>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white font-manrope">Writer / Reviewer Pattern</h3>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-indigo-400">1</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Session A writes the code</p>
+                                        <p class="text-zinc-500 text-xs">First Claude session implements the feature</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-indigo-400">2</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Session B reviews it</p>
+                                        <p class="text-zinc-500 text-xs">Second session reviews with fresh context, finds issues</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-indigo-400">3</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Iterate until clean</p>
+                                        <p class="text-zinc-500 text-xs">Separate contexts prevent self-reinforcing blind spots</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Workflow 3: Subagent Investigation -->
+                        <div class="group p-8 border border-zinc-800 bg-black/60 hover:border-white/20 transition-all rounded-xl">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="p-2 rounded-lg bg-green-500/10 text-green-400">
+                                    <iconify-icon icon="lucide:search-code" width="20" height="20"></iconify-icon>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white font-manrope">Subagent Investigation</h3>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-green-400">1</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Main session delegates research</p>
+                                        <p class="text-zinc-500 text-xs">Claude spawns an Explore subagent for codebase investigation</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-green-400">2</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Subagent explores in isolation</p>
+                                        <p class="text-zinc-500 text-xs">Separate context reads files without cluttering your main session</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-green-400">3</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Summary returns to main session</p>
+                                        <p class="text-zinc-500 text-xs">Only the findings come back, keeping your context lean</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Workflow 4: CI/CD Automation -->
+                        <div class="group p-8 border border-zinc-800 bg-black/60 hover:border-white/20 transition-all rounded-xl">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="p-2 rounded-lg bg-orange-500/10 text-orange-400">
+                                    <iconify-icon icon="lucide:cog" width="20" height="20"></iconify-icon>
+                                </div>
+                                <h3 class="text-xl font-semibold text-white font-manrope">CI/CD Automation</h3>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-orange-400">1</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Pipe data into Claude</p>
+                                        <p class="text-zinc-500 text-xs"><code class="cmd-code">cat logs.txt | claude -p "analyze errors"</code></p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-orange-400">2</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Use in GitHub Actions</p>
+                                        <p class="text-zinc-500 text-xs">Automated code review, PR descriptions, release notes</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start gap-4">
+                                    <div class="shrink-0 w-8 h-8 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-sm font-bold text-orange-400">3</div>
+                                    <div>
+                                        <p class="text-white font-medium text-sm">Schedule recurring tasks</p>
+                                        <p class="text-zinc-500 text-xs">Use <code class="cmd-code">/schedule</code> or <code class="cmd-code">/loop</code> for repeated operations</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════════════ -->
+            <!-- CONFIG CHEAT SHEET                      -->
+            <!-- ════════════════════════════════════════ -->
+            <section id="config" class="py-32 px-6 bg-zinc-950/40 border-t border-white/5">
+                <div class="max-w-5xl mx-auto">
+                    <div class="mb-16 text-center">
+                        <h2 class="text-4xl md:text-5xl font-semibold text-white tracking-tight font-manrope mb-4">
+                            Configuration <span class="text-[#ef233c]">Cheat Sheet</span>
+                        </h2>
+                        <p class="text-lg text-zinc-400 font-light">Where everything lives on disk.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                        <!-- Instructions Files -->
+                        <div class="p-6 border border-zinc-800 bg-black/60 rounded-xl">
+                            <h3 class="text-xs font-bold text-[#ef233c] uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <iconify-icon icon="lucide:file-text" width="14" height="14"></iconify-icon>
+                                Instruction Files
+                            </h3>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">~/.claude/CLAUDE.md</code>
+                                    <span class="text-zinc-400">Personal instructions (all projects)</span>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">./CLAUDE.md</code>
+                                    <span class="text-zinc-400">Project instructions (shared via git)</span>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">./CLAUDE.local.md</code>
+                                    <span class="text-zinc-400">Personal project notes (gitignored)</span>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">.claude/rules/*.md</code>
+                                    <span class="text-zinc-400">Scoped rules (loaded by path match)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Settings Files -->
+                        <div class="p-6 border border-zinc-800 bg-black/60 rounded-xl">
+                            <h3 class="text-xs font-bold text-[#ef233c] uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <iconify-icon icon="lucide:sliders-horizontal" width="14" height="14"></iconify-icon>
+                                Settings Files
+                            </h3>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">~/.claude/settings.json</code>
+                                    <span class="text-zinc-400">User settings (global)</span>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">.claude/settings.json</code>
+                                    <span class="text-zinc-400">Project settings (commit to git)</span>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">.claude/settings.local.json</code>
+                                    <span class="text-zinc-400">Personal project settings (gitignored)</span>
+                                </div>
+                                <div class="flex items-start gap-3 pt-2 border-t border-zinc-800 mt-2">
+                                    <span class="text-zinc-500 text-xs">Load order: user &rarr; project &rarr; local (later overrides earlier)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Extensions -->
+                        <div class="p-6 border border-zinc-800 bg-black/60 rounded-xl">
+                            <h3 class="text-xs font-bold text-[#ef233c] uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <iconify-icon icon="lucide:puzzle" width="14" height="14"></iconify-icon>
+                                Skills, Agents & Plugins
+                            </h3>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">.claude/skills/*/SKILL.md</code>
+                                    <span class="text-zinc-400">Project-scoped custom skills</span>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">~/.claude/skills/*/SKILL.md</code>
+                                    <span class="text-zinc-400">Global custom skills</span>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">.claude/agents/*.md</code>
+                                    <span class="text-zinc-400">Custom subagent definitions</span>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">.mcp.json</code>
+                                    <span class="text-zinc-400">MCP server configuration</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Memory & Data -->
+                        <div class="p-6 border border-zinc-800 bg-black/60 rounded-xl">
+                            <h3 class="text-xs font-bold text-[#ef233c] uppercase tracking-widest mb-6 flex items-center gap-2">
+                                <iconify-icon icon="lucide:database" width="14" height="14"></iconify-icon>
+                                Memory & Session Data
+                            </h3>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">~/.claude/projects/*/memory/</code>
+                                    <span class="text-zinc-400">Auto memory per project</span>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">~/.claude/plans/</code>
+                                    <span class="text-zinc-400">Plan mode plan files</span>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">~/.claude/sessions/</code>
+                                    <span class="text-zinc-400">Session transcripts</span>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <code class="cmd-code shrink-0">~/.claude/hooks/</code>
+                                    <span class="text-zinc-400">Hook scripts</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════════════ -->
+            <!-- SECOND TIP BANNER                       -->
+            <!-- ════════════════════════════════════════ -->
+            <section class="w-full bg-zinc-900 border-y border-zinc-800 py-16 px-6">
+                <div class="max-w-4xl mx-auto text-center">
+                    <h3 class="text-2xl md:text-3xl font-semibold text-zinc-300 font-manrope leading-relaxed">
+                        Use subagents for investigation. They explore in a separate context, keeping your <span class="text-[#ef233c]">main conversation clean</span> for implementation.
+                    </h3>
+                    <p class="mt-4 text-sm text-zinc-500 font-mono">Power User Tip #2 &mdash; Context Hygiene</p>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════════════ -->
+            <!-- PERMISSION MODES                        -->
+            <!-- ════════════════════════════════════════ -->
+            <section class="py-32 px-6 border-t border-white/5">
+                <div class="max-w-5xl mx-auto">
+                    <div class="mb-16 text-center">
+                        <h2 class="text-4xl md:text-5xl font-semibold text-white tracking-tight font-manrope mb-4">
+                            Permission <span class="text-[#ef233c]">Modes</span>
+                        </h2>
+                        <p class="text-lg text-zinc-400 font-light">Control how much autonomy Claude gets. Cycle with <kbd class="cmd-code">Shift+Tab</kbd>.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="p-6 border border-zinc-800 bg-black/60 rounded-xl text-center">
+                            <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-yellow-500/10 flex items-center justify-center">
+                                <iconify-icon icon="lucide:shield" width="24" height="24" class="text-yellow-400"></iconify-icon>
+                            </div>
+                            <h4 class="text-lg font-bold font-manrope text-white mb-2">Default</h4>
+                            <p class="text-xs text-zinc-500">Asks before writes, edits, and most bash commands</p>
+                        </div>
+                        <div class="p-6 border border-zinc-800 bg-black/60 rounded-xl text-center">
+                            <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-blue-500/10 flex items-center justify-center">
+                                <iconify-icon icon="lucide:pencil" width="24" height="24" class="text-blue-400"></iconify-icon>
+                            </div>
+                            <h4 class="text-lg font-bold font-manrope text-white mb-2">Accept Edits</h4>
+                            <p class="text-xs text-zinc-500">Auto-approves file edits, still asks for bash</p>
+                        </div>
+                        <div class="p-6 border border-zinc-800 bg-black/60 rounded-xl text-center">
+                            <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-green-500/10 flex items-center justify-center">
+                                <iconify-icon icon="lucide:bot" width="24" height="24" class="text-green-400"></iconify-icon>
+                            </div>
+                            <h4 class="text-lg font-bold font-manrope text-white mb-2">Auto</h4>
+                            <p class="text-xs text-zinc-500">AI-driven classifier decides which tools to auto-approve</p>
+                        </div>
+                        <div class="p-6 border border-[#ef233c]/30 bg-[#ef233c]/5 rounded-xl text-center">
+                            <div class="w-12 h-12 mx-auto mb-4 rounded-full bg-[#ef233c]/10 flex items-center justify-center">
+                                <iconify-icon icon="lucide:shield-off" width="24" height="24" class="text-[#ef233c]"></iconify-icon>
+                            </div>
+                            <h4 class="text-lg font-bold font-manrope text-white mb-2">Bypass</h4>
+                            <p class="text-xs text-zinc-500">No prompts at all. Use with caution.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- ════════════════════════════════════════ -->
+        <!-- FOOTER                                  -->
+        <!-- ════════════════════════════════════════ -->
+        <footer class="bg-black border-t border-zinc-900 pt-20 pb-10 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-24 relative z-10">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-2 mb-6">
+                        <div class="w-5 h-5 bg-[#ef233c] rounded-sm rotate-45"></div>
+                        <span class="text-2xl font-bold font-manrope tracking-tight">CC Master Class</span>
+                    </div>
+                    <p class="text-zinc-500 max-w-xs leading-relaxed">A personal knowledge hub for mastering Claude Code. Built as a reference for commands, workflows, configuration, and best practices.</p>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-[#ef233c] uppercase tracking-widest mb-6">Sections</h4>
+                    <ul class="space-y-4 text-zinc-400 text-sm">
+                        <li><a href="#topics" class="hover:text-white transition-colors">Topics</a></li>
+                        <li><a href="#quick-ref" class="hover:text-white transition-colors">Quick Reference</a></li>
+                        <li><a href="#workflows" class="hover:text-white transition-colors">Workflows</a></li>
+                        <li><a href="#config" class="hover:text-white transition-colors">Config Cheat Sheet</a></li>
+                        <li><a href="#tips" class="hover:text-white transition-colors">Pro Tips</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-[#ef233c] uppercase tracking-widest mb-6">Resources</h4>
+                    <ul class="space-y-4 text-zinc-400 text-sm">
+                        <li><a href="https://docs.anthropic.com/en/docs/claude-code" target="_blank" rel="noopener" class="hover:text-white transition-colors">Official Docs</a></li>
+                        <li><a href="https://github.com/anthropics/claude-code" target="_blank" rel="noopener" class="hover:text-white transition-colors">GitHub</a></li>
+                        <li><a href="https://www.anthropic.com" target="_blank" rel="noopener" class="hover:text-white transition-colors">Anthropic</a></li>
+                        <li><a href="https://claude.ai" target="_blank" rel="noopener" class="hover:text-white transition-colors">Claude.ai</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Huge Footer Text -->
+            <div class="flex justify-center items-center py-10 opacity-20 pointer-events-none">
+                <h1 class="text-[12vw] leading-none font-bold font-manrope tracking-tighter text-stroke select-none">CLAUDE CODE</h1>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-6 border-t border-zinc-900 pt-8 flex flex-col md:flex-row items-center justify-between text-zinc-600 text-[10px] uppercase tracking-widest">
+                <p>&copy; 2026 Claude Code Master Class. Personal reference by Jeff Meyers.</p>
+                <div class="flex gap-6 mt-4 md:mt-0">
+                    <a href="#hero" class="hover:text-zinc-400">Back to Top</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ════════════════════════════════════════ -->
+    <!-- JAVASCRIPT                              -->
+    <!-- ════════════════════════════════════════ -->
+    <script>
+        // ── Mobile Nav Toggle ──
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileNav = document.getElementById('mobile-nav');
+        const mobileClose = document.getElementById('mobile-close-btn');
+
+        mobileBtn.addEventListener('click', () => mobileNav.classList.add('open'));
+        mobileClose.addEventListener('click', () => mobileNav.classList.remove('open'));
+        document.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => mobileNav.classList.remove('open'));
+        });
+
+        // ── Topic Search Filter ──
+        const searchInput = document.getElementById('topic-search');
+        const topicCards = document.querySelectorAll('.topic-card');
+
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            topicCards.forEach(card => {
+                const text = (card.dataset.topic + ' ' + card.textContent).toLowerCase();
+                card.style.display = query === '' || text.includes(query) ? '' : 'none';
+            });
+        });
+
+        // ── Card Hover Glow (mouse tracking) ──
+        document.querySelectorAll('.topic-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+                const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+                card.style.setProperty('--mouse-x', x + '%');
+                card.style.setProperty('--mouse-y', y + '%');
+            });
+        });
+
+        // ── Smooth Scroll Offset for Fixed Navbar ──
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    const offset = 100;
+                    const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                    window.scrollTo({ top, behavior: 'smooth' });
+                }
+            });
+        });
+
+        // ── Fade-in on Scroll ──
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.topic-card, .group').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
